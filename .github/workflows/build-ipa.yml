@@ -32,18 +32,17 @@ jobs:
           token: ${{ secrets.CROSS_REPO_TOKEN }}
           path: target
 
-- uses: actions/setup-node@v4
-  with:
-    node-version: 20
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-- name: Setup pnpm
-  uses: pnpm/action-setup@v4
-  with:
-    version: 10
-    run_install: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
 
-- name: Select latest available Xcode
-
+      - name: Select latest available Xcode
         run: |
           ls /Applications | grep -i Xcode
           LATEST=$(ls -d /Applications/Xcode*.app | sort -V | tail -n1)
@@ -51,10 +50,8 @@ jobs:
           xcodebuild -version
 
       - name: Install JS dependencies
-        working-directory: target/${{ inputs.app_dir }}
-        run: npm install- name: Install JS dependencies
-  working-directory: target
-  run: pnpm install --frozen-lockfile
+        working-directory: target
+        run: pnpm install --frozen-lockfile
 
       - name: Prebuild native iOS project
         working-directory: target/${{ inputs.app_dir }}
