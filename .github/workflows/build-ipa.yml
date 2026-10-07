@@ -53,11 +53,22 @@ jobs:
         working-directory: target
         run: pnpm install --frozen-lockfile
 
+      - name: Show package.json before prebuild
+        working-directory: target/${{ inputs.app_dir }}
+        run: |
+          cp package.json /tmp/package.before.json
+          grep -nE '"(expo|react|react-native)"' package.json
+
       - name: Prebuild native iOS project
         working-directory: target/${{ inputs.app_dir }}
         env:
           CI: "1"
-        run: npx expo prebuild --platform ios
+        run: |
+          npx expo prebuild --platform ios --no-install || true
+          echo "=== DIFF ==="
+          diff /tmp/package.before.json package.json || true
+          echo "=== bundle id ==="
+          grep -rn "PRODUCT_BUNDLE_IDENTIFIER" ios/*.xcodeproj/project.pbxproj | head -n2
 
       - name: Install CocoaPods dependencies
         working-directory: target/${{ inputs.app_dir }}/ios
